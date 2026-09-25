@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CEO Room ROI Calculator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#060b37;color:#fff;font-family:-apple-system,'Segoe UI',sans-serif;padding:20px 16px 50px}
+.dots{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;cursor:pointer;padding:0;transition:all 0.3s}
+.dot.active{background:#f3b61f;width:18px;border-radius:4px}
+.dot.ans-yes{background:#5BAD8A;border-radius:50%}
+.dot.ans-sometimes{background:#f3b61f;border-radius:50%}
+.dot.ans-no{background:#ff6f61;border-radius:50%}
+.prog{height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;margin-bottom:18px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#f3b61f,#ff6f61);border-radius:2px;transition:width 0.4s}
+.pillar{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px}
+.qbox{background:rgba(255,255,255,0.04);border:1px solid rgba(243,182,31,0.2);border-radius:12px;padding:22px 18px;text-align:center;font-size:18px;font-weight:700;line-height:1.4;margin-bottom:20px}
+.btns{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.abtn{width:100%;padding:16px;border:2px solid rgba(255,255,255,0.12);border-radius:10px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.8);font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;cursor:pointer;transition:all 0.2s}
+.abtn.sel-yes{border-color:#5BAD8A;background:rgba(91,173,138,0.12);color:#5BAD8A}
+.abtn.sel-sometimes{border-color:#f3b61f;background:rgba(243,182,31,0.1);color:#f3b61f}
+.abtn.sel-no{border-color:#ff6f61;background:rgba(255,111,97,0.1);color:#ff6f61}
+.nav{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.back{background:transparent;color:#f3b61f;border:2px solid rgba(243,182,31,0.4);padding:10px 16px;border-radius:8px;font-size:12px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.04em}
+.revsec{flex:1;display:flex;flex-direction:column;gap:10px}
+.revlbl{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.5)}
+.revinput{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:12px 14px;border-radius:8px;font-size:17px;width:100%;outline:none}
+.revinput:focus{border-color:#f3b61f}
+.calcbtn{background:linear-gradient(135deg,#f3b61f,#c8900a);color:#060b37;border:none;padding:14px;border-radius:8px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.04em;cursor:pointer;width:100%}
+.calcbtn:disabled{opacity:0.4}
+.nextbtn{background:transparent;color:#f3b61f;border:2px solid rgba(243,182,31,0.4);padding:10px 16px;border-radius:8px;font-size:12px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.04em}
+#results{display:none}
+.rtitle{font-size:20px;font-weight:900;text-transform:uppercase;text-align:center;margin-bottom:20px;line-height:1.3}
+.rcard{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px;margin-bottom:12px}
+.rlbl{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:10px}
+.srow{display:flex;align-items:center;gap:12px}
+.sbg{flex:1;height:10px;background:rgba(255,255,255,0.08);border-radius:5px;overflow:hidden}
+.sbar{height:100%;border-radius:5px;background:linear-gradient(90deg,#ff6f61,#f3b61f)}
+.spct{font-size:20px;font-weight:900;flex-shrink:0}
+.snote{font-size:11px;color:rgba(255,255,255,0.5);margin-top:8px;line-height:1.6}
+.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.rlb{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.rsub{font-size:9px;color:rgba(255,255,255,0.5);margin-top:4px}
+.feel p{font-size:13px;line-height:1.8;color:#fff;margin-bottom:10px}
+.feelnote{font-size:12px;color:rgba(255,255,255,0.5);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;margin-top:4px;line-height:1.75}
+.goldcard{background:rgba(243,182,31,0.06);border:2px solid #f3b61f;border-radius:12px;padding:18px;margin-bottom:12px;text-align:center}
+.goldtitle{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#f3b61f;margin-bottom:8px}
+.effnote{font-size:11px;color:rgba(255,255,255,0.55);margin-bottom:14px;line-height:1.7}
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.numbox{background:rgba(0,0,0,0.25);border-radius:10px;padding:14px 8px}
+.numlbl{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:6px}
+.numbig{font-weight:900;line-height:1}
+.numsub{font-size:10px;color:rgba(255,255,255,0.5);margin-top:4px}
+.floor{background:rgba(243,182,31,0.08);border-radius:8px;padding:10px 12px;margin-bottom:14px}
+.floor p{font-size:11px;color:#f3b61f;line-height:1.7;text-align:center}
+.apg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.apgcard{background:rgba(0,0,0,0.2);border-radius:8px;padding:10px}
+.apgbar{width:18px;height:2px;background:#f3b61f;margin-bottom:7px}
+.apgt{font-size:11px;font-weight:800;color:#fff;margin-bottom:3px}
+.apgd{font-size:10px;color:rgba(255,255,255,0.5);line-height:1.55}
+.quote{font-size:10px;color:rgba(255,255,255,0.45);font-style:italic;text-align:center}
+.ctacard{background:rgba(243,182,31,0.05);border:2px solid #f3b61f;border-radius:12px;padding:24px 16px;text-align:center;margin-bottom:14px}
+.ctacard h2{font-size:17px;font-weight:900;text-transform:uppercase;margin-bottom:8px;line-height:1.3}
+.ctacard p{color:rgba(255,255,255,0.55);font-size:12px;max-width:340px;margin:0 auto 18px;line-height:1.75}
+.joinbtn{background:linear-gradient(135deg,#f3b61f,#c8900a);color:#060b37;border:none;padding:15px 24px;border-radius:8px;font-size:13px;font-weight:900;text-transform:uppercase;cursor:pointer;width:100%;max-width:300px;letter-spacing:0.04em}
+.ctanote{font-size:9px;color:rgba(255,255,255,0.4);margin-top:10px;letter-spacing:0.06em;text-transform:uppercase}
+.restart{display:block;margin:0 auto;background:none;border:none;color:rgba(255,255,255,0.35);font-size:11px;cursor:pointer;text-decoration:underline;padding:4px}
+</style>
+</head>
+<body>
+<div id="quiz">
+  <div class="dots" id="dots"></div>
+  <div class="prog"><div class="prog-fill" id="pfill"></div></div>
+  <div class="pillar" id="plbl"></div>
+  <div class="qbox" id="qtxt"></div>
+  <div class="btns" id="abtns"></div>
+  <div class="nav">
+    <button class="back" id="backBtn">Back</button>
+    <div class="revsec" id="revsec" style="display:none">
+      <div class="revlbl">Your annual revenue</div>
+      <input class="revinput" type="number" id="revInput" placeholder="e.g. 850000">
+      <button class="calcbtn" id="calcBtn" disabled>Calculate My 12-Month ROI</button>
+    </div>
+    <button class="nextbtn" id="nextBtn" style="display:none">Next</button>
+  </div>
+</div>
+<div id="results">
+  <div class="rtitle">Your 12-month<br><span style="color:#f3b61f">growth projection</span></div>
+  <div class="rcard"><div class="rlbl">Your Alignment Score Today</div><div class="srow"><div class="sbg"><div class="sbar" id="sbar"></div></div><div class="spct" id="spct"></div></div><div class="snote" id="snote"></div></div>
+  <div class="rcard"><div class="rlbl">Alignment by Driver</div><div class="rings" id="rings"></div></div>
+  <div class="rcard"><div class="rlbl">How This Probably Feels Right Now</div><div class="feel" id="feel"></div></div>
+  <div class="goldcard">
+    <div class="goldtitle">If you align consistently for the next 12 months</div>
+    <p class="effnote">From what you already have. No new marketing, no new customers. Just making your existing business work the way it should.</p>
+    <div class="nums" id="nums"></div>
+    <div class="floor"><p><strong>This is the floor, not the ceiling.</strong> Once alignment is in place, growth initiatives compound on a stable base.</p></div>
+    <div class="apg"><div class="apgcard"><div class="apgbar"></div><div class="apgt">Align</div><div class="apgd">Name what is out of alignment in your customers, team, or direction.</div></div><div class="apgcard"><div class="apgbar"></div><div class="apgt">Pivot</div><div class="apgd">Decide the one move you will make this week to correct it.</div></div><div class="apgcard"><div class="apgbar"></div><div class="apgt">Grow</div><div class="apgd">Leverage that pivot into your 30-day target and compound it.</div></div></div>
+    <div class="quote">The growth is already inside your business. Go unlock it. - Shiran Faast</div>
+  </div>
+  <div class="ctacard"><h2>Ready to make this<br><span style="color:#f3b61f">your next 12 months?</span></h2><p>The CEO Room meets weekly. 90 minutes. Built for implementation, not information.</p><button class="joinbtn" id="joinBtn">Join The CEO Room</button><div class="ctanote">Weekly &middot; Align. Pivot. Grow. &middot; C.E.O. Method</div></div>
+  <button class="restart" id="restartBtn">Start over</button>
+</div>
+<script>
+var Q=[{p:'Customer',c:'#f3b61f',q:'Do most serious enquiries convert into paying customers?'},{p:'Customer',c:'#f3b61f',q:'Do your customers regularly come back or refer others without being asked?'},{p:'Customer',c:'#f3b61f',q:'Do customers accept your price without pushing back or asking for a discount?'},{p:'Customer',c:'#f3b61f',q:'Are you confident what you sell today is still exactly what your market wants?'},{p:'Employee',c:'#ff6f61',q:'Does your team bring energy and initiative without you having to push them?'},{p:'Employee',c:'#ff6f61',q:'When a good person leaves, do you see it coming and feel prepared for it?'},{p:'Employee',c:'#ff6f61',q:'Do customers get the same quality every time regardless of who they deal with?'},{p:'Employee',c:'#ff6f61',q:'Can the business run well for a week without you being involved?'},{p:'Owner',c:'#a78bfa',q:'Do I know exactly where my business is heading in the next 12 months?'},{p:'Owner',c:'#a78bfa',q:'Do I make major decisions quickly and confidently without second-guessing myself?'},{p:'Owner',c:'#a78bfa',q:'Is the business giving me more freedom as it grows?'},{p:'Owner',c:'#a78bfa',q:'Am I genuinely excited about what I am building?'}];
+var SC={yes:9,sometimes:4,no:0},ans={},cur=0,rev=0;
+function ring(pct,col,lbl){var r=28,c=35,ci=2*Math.PI*r,d=pct*ci;return '<div><div class="rlb" style="color:'+col+'">'+lbl+'</div><svg width="70" height="70" viewBox="0 0 70 70"><circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/><circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="6" stroke-dasharray="'+d+' '+ci+'" stroke-linecap="round" transform="rotate(-90 '+c+' '+c+')"/><text x="'+c+'" y="40" text-anchor="middle" fill="'+col+'" font-size="12" font-weight="700">'+Math.round(pct*100)+'%</text></svg><div class="rsub">'+Math.round((1-pct)*100)+'% to unlock</div></div>';}
+function fmt(n){if(n>=1000000)return'$'+(n/1000000).toFixed(1)+'M';if(n>=1000)return'$'+Math.round(n/1000).toLocaleString()+'K';return'$'+Math.round(n).toLocaleString();}
+function render(){var q=Q[cur],answered=Object.keys(ans).length,pct=(answered/Q.length)*100;document.getElementById('pfill').style.width=pct+'%';document.getElementById('plbl').textContent=q.p+' Pillar - Q'+(cur+1)+' of '+Q.length;document.getElementById('plbl').style.color=q.c;document.getElementById('qtxt').textContent=q.q;var dotsEl=document.getElementById('dots');dotsEl.innerHTML='';for(var i=0;i<Q.length;i++){var d=document.createElement('button');d.className='dot'+(i===cur?' active':'')+(ans[i]?' ans-'+ans[i]:'');d.dataset.i=i;dotsEl.appendChild(d);}var wrap=document.getElementById('abtns');wrap.innerHTML='';[{k:'yes',l:'Yes'},{k:'sometimes',l:'Sometimes'},{k:'no',l:'No'}].forEach(function(o){var b=document.createElement('button');b.className='abtn'+(ans[cur]===o.k?' sel-'+o.k:'');b.textContent=o.l;b.dataset.key=o.k;wrap.appendChild(b);});var isLast=cur===Q.length-1,allDone=answered===Q.length,bb=document.getElementById('backBtn');bb.style.opacity=cur===0?'0':'1';bb.style.pointerEvents=cur===0?'none':'auto';document.getElementById('revsec').style.display=(isLast&&allDone)?'flex':'none';document.getElementById('nextBtn').style.display=(!isLast&&ans[cur]!==undefined)?'block':'none';}
+function showResults(){document.getElementById('quiz').style.display='none';document.getElementById('results').style.display='block';var tot=0,mx=Q.length*9;var pl={Customer:{s:0,m:0},Employee:{s:0,m:0},Owner:{s:0,m:0}};for(var i=0;i<Q.length;i++){var v=ans[i]?SC[ans[i]]:0;tot+=v;pl[Q[i].p].s+=v;pl[Q[i].p].m+=9;}var pct=tot/mx,sc=pct<0.4?'#ff6f61':pct<0.7?'#f3b61f':'#5BAD8A';document.getElementById('sbar').style.width=Math.round(pct*100)+'%';document.getElementById('spct').textContent=Math.round(pct*100)+'%';document.getElementById('spct').style.color=sc;document.getElementById('snote').textContent=pct<0.4?'Significant gaps across all three drivers.':pct<0.7?'Moderate alignment. Meaningful growth is being left behind.':'Strong alignment. The opportunity is compounding what is working.';document.getElementById('rings').innerHTML=ring(pl.Customer.s/pl.Customer.m,'#f3b61f','Revenue')+ring(pl.Employee.s/pl.Employee.m,'#ff6f61','Profit')+ring(pl.Owner.s/pl.Owner.m,'#a78bfa','Direction');var rp=pl.Customer.s/pl.Customer.m,pp=pl.Employee.s/pl.Employee.m,op=pl.Owner.s/pl.Owner.m;var fl='';fl+='<p>'+(rp<0.4?'Revenue feels harder than it should. The gap between interest and commitment keeps appearing.':rp<0.7?'Revenue is coming in but inconsistently. There is a ceiling you can feel but not break through.':'Your revenue foundation is solid. The opportunity is making it more predictable.')+'</p>';fl+='<p>'+(pp<0.4?'On the profit side, people are not fully switched on and you are still catching what falls through the cracks.':pp<0.7?'Your team is functional but there is a gap between what they deliver and what they are capable of.':'Your team is performing well. The next level is making it self-sustaining.')+'</p>';fl+='<p>'+(op<0.4?'There is a good chance the business feels more like a pressure than a purpose. You started this for freedom and somewhere along the way it started owning you instead.':op<0.7?'Strategically you have direction but decisions take longer than they should.':'You have clarity which is rarer than most owners realise.')+'</p>';if(pct<0.5)fl+='<p class="feelnote">The frustrating part is that none of this is about working harder. The gaps are structural and structural problems have structural fixes.</p>';document.getElementById('feel').innerHTML=fl;var gap=mx-tot,gained=gap*0.6,rg=rev*gained*0.008,pr=rev+rg,pp2=Math.min(Math.round(gained*0.9),35);document.getElementById('nums').innerHTML='<div class="numbox"><div class="numlbl">Revenue Could Reach</div><div class="numbig" style="font-size:24px;color:#f3b61f">'+fmt(pr)+'</div><div class="numsub">+'+fmt(rg)+' efficiency gain</div></div><div class="numbox"><div class="numlbl">Profit Margin Increase</div><div class="numbig" style="font-size:38px;color:#ff6f61">+'+pp2+'%</div><div class="numsub">on your existing revenue</div></div>';}
+function reset(){ans={};cur=0;rev=0;document.getElementById('quiz').style.display='block';document.getElementById('results').style.display='none';var ri=document.getElementById('revInput');if(ri)ri.value='';var cb=document.getElementById('calcBtn');if(cb)cb.disabled=true;render();}
+document.addEventListener('click',function(e){var t=e.target;if(t.classList.contains('dot')){cur=parseInt(t.dataset.i);render();return;}if(t.classList.contains('abtn')){ans[cur]=t.dataset.key;setTimeout(function(){if(cur<Q.length-1)cur++;render();},350);return;}if(t.id==='backBtn'){if(cur>0){cur--;render();}return;}if(t.id==='nextBtn'){cur++;render();return;}if(t.id==='calcBtn'){var v=parseFloat(document.getElementById('revInput').value);if(!v||v<=0)return;rev=v;showResults();return;}if(t.id==='joinBtn'){window.open('https://www.shiranfaast.com/the-ceo-room','_blank');return;}if(t.id==='restartBtn'){reset();return;}});
+document.addEventListener('input',function(e){if(e.target.id==='revInput'){rev=parseFloat(e.target.value)||0;document.getElementById('calcBtn').disabled=rev<=0;}});
+render();
+</script>
+</body>
+</html>
